@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "imgproc.hpp": "c",
+        "highgui.hpp": "c",
+        "timer.hpp": "c"
+    }
+}
