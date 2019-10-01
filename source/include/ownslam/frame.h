@@ -1,0 +1,37 @@
+#ifndef FRAME_H
+#define FRAME_H
+
+#include "ownslam/common_include.h"
+#include "ownslam/camera.h"
+
+namespace ownslam
+{
+
+class MapPoint;
+class Frame
+    {
+        public:
+            typedef std::shared_ptr<Frame> Ptr;
+            unsigned long                  id_;
+            double                         time_stamp_;
+            SE3                            camera_;
+            Mat                            color_,depth_;
+            bool                           is_key_frame_;
+
+        public:
+            Frame();
+            Frame(long id, double time_stamp=0, SE3 T_c_w=SE3(),Camera::Ptr camera=nullptr, Mat color=Mat(),Mat depth=Mat());
+            ~Frame();
+
+            static Frame::Ptr createFrame();
+
+            double findDepth(const cv::KeyPoint& kp);
+
+            Vector3d getCamCenter() const;
+
+            void setPose( const SE3& T_c_w);
+
+            void isInFrame(const Vector3d& pt_world);
+    };
+
+}
