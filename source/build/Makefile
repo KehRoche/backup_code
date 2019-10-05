@@ -48,10 +48,10 @@ RM = /home/kehroche/Downloads/cmake-3.9.1-Linux-x86_64/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/kehroche/Source/source
+CMAKE_SOURCE_DIR = /home/kehroche/Source/backup_code/source
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/kehroche/Source/source/build
+CMAKE_BINARY_DIR = /home/kehroche/Source/backup_code/source/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -80,9 +80,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/kehroche/Source/source/build/CMakeFiles /home/kehroche/Source/source/build/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/kehroche/Source/backup_code/source/build/CMakeFiles /home/kehroche/Source/backup_code/source/build/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/kehroche/Source/source/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/kehroche/Source/backup_code/source/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -111,17 +111,30 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named hello
+# Target rules for targets named ownslam
 
 # Build rule for target.
-hello: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 hello
-.PHONY : hello
+ownslam: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 ownslam
+.PHONY : ownslam
 
 # fast build rule for target.
-hello/fast:
-	$(MAKE) -f CMakeFiles/hello.dir/build.make CMakeFiles/hello.dir/build
-.PHONY : hello/fast
+ownslam/fast:
+	$(MAKE) -f src/CMakeFiles/ownslam.dir/build.make src/CMakeFiles/ownslam.dir/build
+.PHONY : ownslam/fast
+
+#=============================================================================
+# Target rules for targets named demov1
+
+# Build rule for target.
+demov1: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 demov1
+.PHONY : demov1
+
+# fast build rule for target.
+demov1/fast:
+	$(MAKE) -f demo/CMakeFiles/demov1.dir/build.make demo/CMakeFiles/demov1.dir/build
+.PHONY : demov1/fast
 
 # Help Target
 help:
@@ -131,7 +144,8 @@ help:
 	@echo "... depend"
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
-	@echo "... hello"
+	@echo "... ownslam"
+	@echo "... demov1"
 .PHONY : help
 
 

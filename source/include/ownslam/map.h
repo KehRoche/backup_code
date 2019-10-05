@@ -1,4 +1,4 @@
-#include MAP_H
+#ifndef MAP_H
 #define MAP_H
 
 #include"ownslam/common_include.h"

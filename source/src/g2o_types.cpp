@@ -1,6 +1,6 @@
 #include "ownslam/g2o_types.h"
 
-namespace myslam
+namespace ownslam
 {
 void EdgeProjectXYZRGBD::computeError()
 {

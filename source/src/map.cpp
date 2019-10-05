@@ -7,7 +7,7 @@ namespace ownslam
     {
         cout<<"key frame size = "<<keyframes_.size()<<endl;
         //judge if the frame you want to insert already in the map
-        if(keyframe_.find(frame->id_)==keyframes_.endl())
+        if(keyframes_.find(frame->id_)==keyframes_.end())
         {   //not exist then insert
             //make pair combine keyindex and value as a struct
             keyframes_.insert(make_pair(frame->id_,frame));
@@ -15,7 +15,7 @@ namespace ownslam
         else
         {
             //already in, there refresh it
-            keyframe_[ frame->id_] = frame;
+            keyframes_[ frame->id_] = frame;
         }
     }
     void Map::insertMapPoint ( MapPoint::Ptr map_point )

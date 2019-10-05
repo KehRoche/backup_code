@@ -1,8 +1,8 @@
 #ifndef VISUALODOMETRY_H
 #define VISUALODOMETRY_H
 
-#include "myslam/common_include.h"
-#include "myslam/map.h"
+#include "ownslam/common_include.h"
+#include "ownslam/map.h"
 
 #include <opencv2/features2d/features2d.hpp>
 
@@ -10,63 +10,65 @@ namespace ownslam
 {
     class VisualOdometry
     {
-        public:
-            typedef shared_ptr<VisualOdometry> ptr;
-            enum VOState{
-                INITIALIZING=1,
-                OK=0,
-                LOST
-            };
-            VOState state_;
-            Map::Ptr map_;
+    public:
+        typedef shared_ptr<VisualOdometry> Ptr;
+        enum VOState {
+            INITIALIZING=-1,
+            OK=0,
+            LOST
+        };
 
-            Frame::Ptr ref_;
-            Frame::Ptr curr_;
+        VOState     state_;     // current VO status
+        Map::Ptr    map_;       // map with all frames and map points
 
-            cv::Ptr<cv::ORB> orb_;
-            vector<cv::KeyPoint> keypoints_curr_;
-            Mat                  descriptors_curr_;
+        Frame::Ptr  ref_;       // reference key-frame
+        Frame::Ptr  curr_;      // current frame
 
-            cv::FlannBasedMatcher matcher_flann_;
-            vector<MapPoint::Ptr> match_3dpts_;
-            vector<int>           match_2dkp_index_;
+        cv::Ptr<cv::ORB> orb_;  // orb detector and computer
+        vector<cv::KeyPoint>    keypoints_curr_;    // keypoints in current frame
+        Mat                     descriptors_curr_;  // descriptor in current frame
 
-            SE3 T_c_w_estimated_;
-            int num_inliers_;
-            int num_lost_;
+        cv::FlannBasedMatcher   matcher_flann_;     // flann matcher
+        vector<MapPoint::Ptr>   match_3dpts_;       // matched 3d points
+        vector<int>             match_2dkp_index_;  // matched 2d pixels (index of kp_curr)
 
-            int num_of_features_;
-            double scale_factor_;
-            int level_pyramid_;
-            float match_ratio_;
-            int max_num_lost_;
-            int min_inliers_;
-            double key_frame_min_rot;
-            double key_frame_min_trans;
-            double map_point_erase_ratio_;
+        SE3 T_c_w_estimated_;    // the estimated pose of current frame
+        int num_inliers_;        // number of inlier features in icp
+        int num_lost_;           // number of lost times
 
-        public:
-            VisualOdometry();
-            ~VisualOdometry();
+        // parameters
+        int num_of_features_;   // number of features
+        double scale_factor_;   // scale in image pyramid
+        int level_pyramid_;     // number of pyramid levels
+        float match_ratio_;     // ratio for selecting  good matches
+        int max_num_lost_;      // max number of continuous lost times
+        int min_inliers_;       // minimum inliers
+        double key_frame_min_rot;   // minimal rotation of two key-frames
+        double key_frame_min_trans; // minimal translation of two key-frames
+        double  map_point_erase_ratio_; // remove map point ratio
 
-            bool addFrame(Frame::Ptr frame);
+    public: // functions
+        VisualOdometry();
+        ~VisualOdometry();
 
-        protected:
+        bool addFrame( Frame::Ptr frame );      // add a new frame
 
-            void extractKeyPoints();
-            void computeDescriptors(); 
-            void featureMatching();
-            void poseEstimationPnP(); 
-            void optimizeMap();
-        
-            void addKeyFrame();
-            void addMapPoints();
-            bool checkEstimatedPose(); 
-            bool checkKeyFrame();
-        
-            double getViewAngle( Frame::Ptr frame, MapPoint::Ptr point );
+    protected:
+        // inner operation
+        void extractKeyPoints();
+        void computeDescriptors();
+        void featureMatching();
+        void poseEstimationPnP();
+        void optimizeMap();
+
+        void addKeyFrame();
+        void addMapPoints();
+        bool checkEstimatedPose();
+        bool checkKeyFrame();
+
+        double getViewAngle( Frame::Ptr frame, MapPoint::Ptr point );
 
     };
-}
+    }
 
-#endif
+    #endif // VISUALODOMETRY_H
