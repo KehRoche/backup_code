@@ -283,3 +283,49 @@ void VisualOdometry::addMapPoint()
     }
 
 }
+
+void VisualOdometry::optimizeMap()
+{
+    for(auto iter = map_->map_points_.begin();iter != map_->map_points_.end();)
+    {
+        if(!curr_->isInFrame(iter->second->pos_))
+        {
+            iter = map_->map_points_.erase(iter);
+            continue;
+        }
+        float match_ratio = float(iter->second->matched_times_)/iter->second->visible_times_;
+        if(match_ratio < map_points_.erase_ratio_)
+        {
+            iter = map_->map_points_.erase(iter);
+            continue;
+        }
+        if(iter->second->good_==false)
+        {
+
+        }
+        double angle = getViewAngle(curr_,iter->second);
+        if(angle>M_PI/6.)
+        {
+            iter = map->map_points_.erase(iter);
+            continue;
+        }
+        iter++;
+    }
+    if(match_2dkp_index_.size()<100)
+    {
+        addMapPoints();
+    }
+    if(map_->map_points_.size()>1000)
+    {
+        map_point_erase_ratio_+=0.05;
+    }
+    else
+        map_point_erase_ratio_ = 0.1;
+
+}
+double VisualOdometry::getViewAngle(Frame::Ptr frame,MapPoint::Ptr point)
+{
+    Vector3d n = point->pos_-frame->getCamCenter();
+    n.normalize();
+    reuturn acos(n.transpose()*point->norm_);
+}
