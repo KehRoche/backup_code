@@ -7,6 +7,7 @@
 
 #include "ownslam/config.h"
 #include "ownslam/vo.h"
+#include <oepncv2/opencv.hpp>
 
 int main ( int argc, char** argv )
 {
@@ -43,53 +44,57 @@ int main ( int argc, char** argv )
             break;
     }
 
+    cv::VideoCapture capture(0);//初始化USB通道1的摄像头
+
     ownslam::Camera::Ptr camera ( new ownslam::Camera );
 
-//    for ( int i=0; i<rgb_files.size(); i++ )
-//    {
-//        cout<<"****** loop "<<i<<" ******"<<endl;
-//        Mat color = cv::imread ( rgb_files[i] );
-//        Mat depth = cv::imread ( depth_files[i], -1 );
-//        if ( color.data==nullptr || depth.data==nullptr )
-//            break;
-//        ownslam::Frame::Ptr pFrame = myslam::Frame::createFrame();
-//        pFrame->camera_ = camera;
-//        pFrame->color_ = color;
-//        pFrame->depth_ = depth;
-//        pFrame->time_stamp_ = rgb_times[i];
+   for ( int i=0; i<rgb_files.size(); i++ )
+   {
+      
+      while(1)
+      {
+          Mat originalframe;
+          capture>>originalframe;
+          if(originalframe.empty())
+          {
+              break;
+          }
+          else
+          {
+              Mat color = originalframe.clone();
+          }
+      }
+       cout<<"****** loop "<<i<<" ******"<<endl;
+       Mat color = cv::imread ( rgb_files[i] );
+       Mat depth = cv::imread ( depth_files[i], -1 );
+       if ( color.data==nullptr || depth.data==nullptr )
+           break;
+       ownslam::Frame::Ptr pFrame = myslam::Frame::createFrame();
+       pFrame->camera_ = camera;
+       pFrame->color_ = color;
+       pFrame->depth_ = depth;
+       //pFrame->time_stamp_ = rgb_times[i];
 
-//        boost::timer timer;
-//        vo->addFrame ( pFrame );
-//        cout<<"VO costs time: "<<timer.elapsed() <<endl;
+       boost::timer timer;
+       vo->addFrame ( pFrame );
+       cout<<"VO costs time: "<<timer.elapsed() <<endl;
 
-//        if ( vo->state_ == myslam::VisualOdometry::LOST )
-//            break;
-//        SE3 Twc = pFrame->T_c_w_.inverse();
+       if ( vo->state_ == myslam::VisualOdometry::LOST )
+           break;
+       SE3 Twc = pFrame->T_c_w_.inverse();
 
-//        // show the map and the camera pose
-//        cv::Affine3d M (
-//            cv::Affine3d::Mat3 (
-//                Twc.rotation_matrix() ( 0,0 ), Twc.rotation_matrix() ( 0,1 ), Twc.rotation_matrix() ( 0,2 ),
-//                Twc.rotation_matrix() ( 1,0 ), Twc.rotation_matrix() ( 1,1 ), Twc.rotation_matrix() ( 1,2 ),
-//                Twc.rotation_matrix() ( 2,0 ), Twc.rotation_matrix() ( 2,1 ), Twc.rotation_matrix() ( 2,2 )
-//            ),
-//            cv::Affine3d::Vec3 (
-//                Twc.translation() ( 0,0 ), Twc.translation() ( 1,0 ), Twc.translation() ( 2,0 )
-//            )
-//        );
+       Mat img_show = color.clone();
+       for ( auto& pt:vo->map_->map_points_ )
+       {
+           myslam::MapPoint::Ptr p = pt.second;
+           Vector2d pixel = pFrame->camera_->world2pixel ( p->pos_, pFrame->T_c_w_ );
+           cv::circle ( img_show, cv::Point2f ( pixel ( 0,0 ),pixel ( 1,0 ) ), 5, cv::Scalar ( 0,255,0 ), 2 );
+       }
 
-//        Mat img_show = color.clone();
-//        for ( auto& pt:vo->map_->map_points_ )
-//        {
-//            myslam::MapPoint::Ptr p = pt.second;
-//            Vector2d pixel = pFrame->camera_->world2pixel ( p->pos_, pFrame->T_c_w_ );
-//            cv::circle ( img_show, cv::Point2f ( pixel ( 0,0 ),pixel ( 1,0 ) ), 5, cv::Scalar ( 0,255,0 ), 2 );
-//        }
-
-//        cv::imshow ( "image", img_show );
-//        cv::waitKey ( 1 );
-//        cout<<endl;
-//    }
+       cv::imshow ( "image", img_show );
+       cv::waitKey ( 1 );
+       cout<<endl;
+   }
 
     return 0;
 }
