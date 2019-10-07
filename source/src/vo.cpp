@@ -210,6 +210,7 @@ void VisualOdometry::poseEstimationPnP()
         pose->estimate().translation()
     );
 
+    optimizer.save("result.g2o");
     cout<<"T_c_w_estimated_: "<<endl<<T_c_w_estimated_.matrix()<<endl;
 }
 
