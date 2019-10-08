@@ -8,6 +8,9 @@
 #include "ownslam/config.h"
 #include "ownslam/vo.h"
 //#include <oepncv2/opencv.hpp>
+#include <s1/Camera.hpp>
+
+using namespace s1::InitParameters;
 
 int main ( int argc, char** argv )
 {
@@ -19,6 +22,13 @@ int main ( int argc, char** argv )
 
     ownslam::Config::setParameterFile ( argv[1] );
     ownslam::VisualOdometry::Ptr vo ( new ownslam::VisualOdometry );
+    s1::Camera zed;
+    s1::InitParameters initParameters;
+    initParameters.depth_mode = DEPTH_MODE_ULTRA;
+    initParameters.coordinate_system = COORDINATE_SYSTEM_RIGHT_HANDED_Y_UP;
+    init_params.camera_resolution = RESOLUTION_HD1080;
+    init_params.camera_fps = 30;
+    
 
     string dataset_dir = ownslam::Config::get<string> ( "dataset_dir" );
     cout<<"dataset: "<<dataset_dir<<endl;
@@ -29,20 +39,7 @@ int main ( int argc, char** argv )
         return 1;
     }
 
-    vector<string> rgb_files, depth_files;
-    vector<double> rgb_times, depth_times;
-    while ( !fin.eof() )
-    {
-        string rgb_time, rgb_file, depth_time, depth_file;
-        fin>>rgb_time>>rgb_file>>depth_time>>depth_file;
-        rgb_times.push_back ( atof ( rgb_time.c_str() ) );
-        depth_times.push_back ( atof ( depth_time.c_str() ) );
-        rgb_files.push_back ( dataset_dir+"/"+rgb_file );
-        depth_files.push_back ( dataset_dir+"/"+depth_file );
-
-        if ( fin.good() == false )
-            break;
-    }
+    vector<Mat> rgb_files, depth_files;
 
     cv::VideoCapture capture(0);//初始化USB通道1的摄像头
 
@@ -65,10 +62,16 @@ int main ( int argc, char** argv )
               Mat color = originalframe.clone();
           }
       } */
-
+        s1::Mat depth;
+        s1::Mat color;
+        if (zed.grab() == SUCCESS) 
+        {
+          // A new image and depth is available if grab() returns SUCCESS
+          zed.retrieveImage(color, VIEW_LEFT); // Retrieve left image
+          zed.retrieveMeasure(depth, MEASURE_DEPTH); // Retrieve depth
+        }
+       
        cout<<"****** loop "<<i<<" ******"<<endl;
-       Mat color = cv::imread ( rgb_files[i] );
-       Mat depth = cv::imread ( depth_files[i], -1 );
        if ( color.data==nullptr || depth.data==nullptr )
            break;
        ownslam::Frame::Ptr pFrame = ownslam::Frame::createFrame();

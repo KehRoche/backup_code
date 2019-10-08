@@ -28,6 +28,7 @@ Camera::Camera()
     fy_ = Config::get<float>("camera.fy");
     cx_ = Config::get<float>("camera.cx");
     cy_ = Config::get<float>("camera.cy");
+    //the default depth unit zed return is millimeters
     depth_scale_ = Config::get<float>("camera.depth_scale");
 }
 

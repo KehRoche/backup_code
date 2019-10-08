@@ -48,7 +48,8 @@ double Frame::findDepth ( const cv::KeyPoint& kp )
 {
     int x = cvRound(kp.pt.x);
     int y = cvRound(kp.pt.y);
-    ushort d = depth_.ptr<ushort>(y)[x];
+    float d = 0;
+    depth_.getValue(y,x,&d);
     if ( d!=0 )
     {
         return double(d)/camera_->depth_scale_;
@@ -60,7 +61,8 @@ double Frame::findDepth ( const cv::KeyPoint& kp )
         int dy[4] = {0,-1,0,1};
         for ( int i=0; i<4; i++ )
         {
-            d = depth_.ptr<ushort>( y+dy[i] )[x+dx[i]];
+            float d = 0;
+            depth_.getValue(y+dy[i],x+dx[i],&d);            
             if ( d!=0 )
             {
                 return double(d)/camera_->depth_scale_;
