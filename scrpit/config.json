@@ -1,0 +1,17 @@
+{
+	"server":"de1-sta25.a3iv4.space",
+	"server_ipv6": "::",
+	"server_port":33611,
+	"local_address": "127.0.0.1",
+	"local_port":1080,
+	"password":"xChP5BzY4cJSF98",
+	"timeout":300,
+	"udp_timeout": 60,
+	"method":"chacha20-ietf-poly1305",
+	"protocol": "origin",
+	"protocol_param": "",
+	"obfs":"plain",
+	"obfs_param": "",
+	"fast_open": false,
+	"workers": 4
+}
